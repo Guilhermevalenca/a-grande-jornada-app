@@ -12,10 +12,48 @@
         />
 
         <q-toolbar-title>
-          Quasar App
+          A grande jornada
         </q-toolbar-title>
 
-        <div>Quasar v{{ $q.version }}</div>
+        <div v-if="userStore.id">
+          <q-btn-dropdown
+            :label="userStore.name"
+          >
+            <div class="row no-wrap q-pa-md">
+              <div class="column items-center">
+                <q-avatar>
+                  <img src="https://cdn.quasar.dev/img/boy-avatar.png" alt="avatar">
+                </q-avatar>
+                <div class="text-subtitle1">
+                  {{userStore.name}}
+                </div>
+
+                <q-list class="q-mt-md rounded-borders" separator bordered>
+                  <q-item clickable class="flex items-center">
+                    <q-icon name="mdi-account-circle" />
+                    Meu perfil
+                  </q-item>
+                  <q-item clickable class="items-center">
+                    <q-icon name="mdi-cog" />
+                    Configurações
+                  </q-item>
+                  <q-item>
+                    <q-btn
+                      color="negative"
+                      push
+                      @click="logout"
+                    >
+                      Desconectar
+                    </q-btn>
+                  </q-item>
+                </q-list>
+              </div>
+            </div>
+          </q-btn-dropdown>
+        </div>
+        <div v-else>
+          <q-btn push :to="{name: 'auth'}">Login</q-btn>
+        </div>
       </q-toolbar>
     </q-header>
 
@@ -28,7 +66,7 @@
         <q-item-label
           header
         >
-          Essential Links
+          Navegação
         </q-item-label>
 
         <EssentialLink
@@ -40,7 +78,9 @@
     </q-drawer>
 
     <q-page-container>
-      <router-view />
+      <q-page class="row items-center justify-evenly">
+        <router-view />
+      </q-page>
     </q-page-container>
   </q-layout>
 </template>
@@ -48,50 +88,15 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 import EssentialLink, { EssentialLinkProps } from 'components/EssentialLink.vue';
+import useUserStore from 'stores/useUserStore';
 
 const linksList: EssentialLinkProps[] = [
   {
-    title: 'Docs',
-    caption: 'quasar.dev',
-    icon: 'school',
-    link: 'https://quasar.dev'
+    title: 'Pagina inicial',
+    // caption: 'quasar.dev',
+    icon: 'mdi-home',
+    name: 'home'
   },
-  {
-    title: 'Github',
-    caption: 'github.com/quasarframework',
-    icon: 'code',
-    link: 'https://github.com/quasarframework'
-  },
-  {
-    title: 'Discord Chat Channel',
-    caption: 'chat.quasar.dev',
-    icon: 'chat',
-    link: 'https://chat.quasar.dev'
-  },
-  {
-    title: 'Forum',
-    caption: 'forum.quasar.dev',
-    icon: 'record_voice_over',
-    link: 'https://forum.quasar.dev'
-  },
-  {
-    title: 'Twitter',
-    caption: '@quasarframework',
-    icon: 'rss_feed',
-    link: 'https://twitter.quasar.dev'
-  },
-  {
-    title: 'Facebook',
-    caption: '@QuasarFramework',
-    icon: 'public',
-    link: 'https://facebook.quasar.dev'
-  },
-  {
-    title: 'Quasar Awesome',
-    caption: 'Community Quasar projects',
-    icon: 'favorite',
-    link: 'https://awesome.quasar.dev'
-  }
 ];
 
 export default defineComponent({
@@ -102,15 +107,24 @@ export default defineComponent({
   },
 
   data () {
+    const userStore = useUserStore();
+
     return {
       linksList,
-      leftDrawerOpen: false
+      leftDrawerOpen: false,
+      userStore
     }
   },
 
   methods: {
     toggleLeftDrawer () {
       this.leftDrawerOpen = !this.leftDrawerOpen;
+    },
+    async logout() {
+      localStorage.removeItem('token');
+      this.userStore.$reset();
+      await this.$api.post('api/logout')
+        .finally(() => this.$api.defaults.headers.common.Authorization = '');
     }
   }
 });

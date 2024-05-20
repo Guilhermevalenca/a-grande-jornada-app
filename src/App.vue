@@ -4,8 +4,32 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue';
+import useUserStore from 'stores/useUserStore';
 
 export default defineComponent({
-  name: 'App'
+  name: 'App',
+
+  methods: {
+    async isAuthUser() {
+      const token = localStorage.getItem('token');
+      if(token) {
+        const userStore = useUserStore()
+        this.$api.defaults.headers.common.Authorization = `Bearer ${token}`;
+        await this.$api.get('api/user')
+          .then(response => {
+            userStore.setUser(response.data);
+          })
+          .catch(error => {
+            localStorage.removeItem('token');
+            this.$api.defaults.headers.common.Authorization = '';
+            console.log(error);
+          })
+      }
+    }
+  },
+
+  created() {
+    this.isAuthUser();
+  }
 });
 </script>
