@@ -73,7 +73,7 @@ export default defineComponent({
         }
         return 'Email invalido!';
       }
-    ]
+    ];
 
     return {
       email,
