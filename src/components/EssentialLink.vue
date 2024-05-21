@@ -3,6 +3,7 @@
     clickable
     :to="{name: name}"
     :active="$route.name === name"
+    v-if="!isLogged || !!userStore.id"
   >
     <q-item-section
       v-if="icon"
@@ -20,12 +21,14 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue';
+import useUserStore from 'stores/useUserStore';
 
 export interface EssentialLinkProps {
   title: string;
   caption?: string;
   name?: string;
   icon?: string;
+  isLogged?: boolean;
 }
 
 export default defineComponent({
@@ -49,8 +52,20 @@ export default defineComponent({
     icon: {
       type: String,
       default: ''
+    },
+
+    isLogged: {
+      type: Boolean,
+      default: false
     }
   },
 
+  data() {
+    const userStore = useUserStore();
+
+    return {
+      userStore
+    }
+  }
 });
 </script>

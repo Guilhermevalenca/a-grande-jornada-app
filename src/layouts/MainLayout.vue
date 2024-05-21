@@ -118,10 +118,11 @@ export default defineComponent({
         name: 'home'
       },
       {
-        title: 'Funcionalidade 1',
-        caption: 'Realiza tal ação',
-        icon: 'school',
-        name: ''
+        title: 'Formulários',
+        caption: 'Seus formulários',
+        icon: 'mdi-form-select',
+        name: 'forms',
+        isLogged: true
       },
       {
         title: 'Funcionalidade 2',
