@@ -23,7 +23,15 @@
     outlined
     :disable="loading"
     :rules="rulesPassword"
-  />
+    :type="show.password ? 'text' : 'password'"
+  >
+    <template #append>
+      <q-icon
+        :name="`mdi-${show.password ? 'eye-outline' : 'eye-off-outline'}`"
+        @click="show.password = !show.password"
+      />
+    </template>
+  </q-input>
   <br>
   <q-input
     label="Confirme sua senha"
@@ -31,7 +39,15 @@
     outlined
     :disable="loading"
     :rules="rulesConfirmationPassword"
-  />
+    :type="show.confirm_password ? 'text' : 'password'"
+  >
+    <template #append>
+      <q-icon
+        :name="`mdi-${show.confirm_password ? 'eye-outline' : 'eye-off-outline'}`"
+        @click="show.confirm_password = !show.confirm_password"
+      />
+    </template>
+  </q-input>
   <br>
   <div class="flex justify-end">
     <q-btn
@@ -98,13 +114,19 @@ export default defineComponent({
       }
     ]
 
+    const show = {
+      password: false,
+      confirm_password: false
+    }
+
     return {
       form,
       loading,
       userStore,
       rulesDefault,
       rulesPassword,
-      rulesConfirmationPassword
+      rulesConfirmationPassword,
+      show
     }
   },
 
