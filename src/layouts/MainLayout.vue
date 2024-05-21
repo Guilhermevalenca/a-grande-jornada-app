@@ -14,7 +14,18 @@
         <q-toolbar-title>
           A grande jornada
         </q-toolbar-title>
-
+        <div>
+          <q-icon
+            name="mdi-theme-light-dark"
+            size="sm"
+            @click="$q.dark.toggle()"
+            class="q-mr-sm"
+          >
+            <q-tooltip>
+              Alterar tema!
+            </q-tooltip>
+          </q-icon>
+        </div>
         <div v-if="userStore.id">
           <q-btn-dropdown
             :label="userStore.name"
@@ -90,15 +101,6 @@ import { defineComponent } from 'vue';
 import EssentialLink, { EssentialLinkProps } from 'components/EssentialLink.vue';
 import useUserStore from 'stores/useUserStore';
 
-const linksList: EssentialLinkProps[] = [
-  {
-    title: 'Pagina inicial',
-    // caption: 'quasar.dev',
-    icon: 'mdi-home',
-    name: 'home'
-  },
-];
-
 export default defineComponent({
   name: 'MainLayout',
 
@@ -108,6 +110,26 @@ export default defineComponent({
 
   data () {
     const userStore = useUserStore();
+    const linksList: EssentialLinkProps[] = [
+      {
+        title: 'Pagina inicial',
+        // caption: 'quasar.dev',
+        icon: 'mdi-home',
+        name: 'home'
+      },
+      {
+        title: 'Funcionalidade 1',
+        caption: 'Realiza tal ação',
+        icon: 'school',
+        name: ''
+      },
+      {
+        title: 'Funcionalidade 2',
+        caption: 'Só deus sabe que desgraça isso faz',
+        icon: 'school',
+        name: ''
+      }
+    ];
 
     return {
       linksList,
