@@ -3,22 +3,15 @@
     <q-input
       v-model="form.title"
       label="Titulo do seu formulário"
-      placeholder="Escreve o titulo que você desejar para o seu formulário"
+      placeholder="Escreve o titulo para a identificação do formulário"
       maxlength="255"
       counter
       outlined
       :loading="loading"
       :rules="rules"
       :readonly="loading"
-    >
-      <template #append>
-        <q-btn icon="mdi-help" rounded>
-          <q-tooltip>
-            <div class="text-h6">O nome do formulário é importante para indentifica-lo</div>
-          </q-tooltip>
-        </q-btn>
-      </template>
-    </q-input>
+      class="col-11"
+    />
     <br>
     <q-card v-for="(question, index) in form.questions" :key="index" class="q-mb-md">
       <q-card-actions class="flex justify-between">
@@ -73,7 +66,7 @@
 
 <script lang="ts">
 import { defineAsyncComponent, defineComponent } from 'vue';
-import { IForm } from 'stores/useFormsStore';
+import useFormsStore, { IForm } from 'stores/useFormsStore';
 
 export default defineComponent({
   name: 'CreateFormComponent',
@@ -81,6 +74,8 @@ export default defineComponent({
   components: {
     QuestionForm: defineAsyncComponent(() => import('components/form/createForm/QuestionFormComponent.vue'))
   },
+
+  emits: ['toListForm'],
 
   data() {
     const form: IForm = {
@@ -103,12 +98,14 @@ export default defineComponent({
       (value: string): string | boolean => {
         return value ? !!value : 'É necessário adicionar um titulo';
       }
-    ]
+    ];
+    const formStore = useFormsStore();
 
     return {
       form,
       loading,
-      rules
+      rules,
+      formStore
     }
   },
 
@@ -128,11 +125,32 @@ export default defineComponent({
     removeQuestion(index: number) {
       this.form.questions.splice(index, 1);
     },
+    resetForm() {
+      this.form = {
+        title: '',
+        questions: [
+          {
+            title: '',
+            options: [
+              {
+                title: '',
+                isOpen: false,
+                correctAlternative: false
+              }
+            ]
+          }
+        ]
+      }
+    },
     async submit() {
       this.loading = true;
       await this.$api.post('api/form', this.form)
         .then(response => {
-          console.log(response);
+          if(response.data.success) {
+            this.formStore.addForm(this.form);
+            this.resetForm();
+            this.$emit('toListForm');
+          }
         })
         .catch(error => {
           console.log(error);

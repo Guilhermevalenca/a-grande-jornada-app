@@ -19,10 +19,9 @@ export default defineComponent({
           .then(response => {
             userStore.setUser(response.data);
           })
-          .catch(error => {
+          .catch(() => {
             localStorage.removeItem('token');
             this.$api.defaults.headers.common.Authorization = '';
-            console.log(error);
           })
       }
     }

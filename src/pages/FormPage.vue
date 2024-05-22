@@ -18,7 +18,9 @@
           <ListForms />
         </q-tab-panel>
         <q-tab-panel name="create">
-          <CreateForm />
+          <CreateForm
+            @toListForm="page = 'index'"
+          />
         </q-tab-panel>
       </q-tab-panels>
     </q-card-section>
