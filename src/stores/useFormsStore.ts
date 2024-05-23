@@ -29,7 +29,7 @@ export default defineStore('forms', {
     order: 'created' as 'created' | 'updated'
   }),
   getters: {
-    getForms(state) {
+    getForms(state): IForm[] {
       let forms: IForm[];
       if(state.order === 'updated') {
         //Organizando formulários por data de atualização
@@ -53,14 +53,26 @@ export default defineStore('forms', {
     }
   },
   actions: {
-    addForm(form: IForm) {
+    addForm(form: IForm): void {
       this.forms.push(form);
     },
-    addManyForms(forms: IForm[]) {
+    addManyForms(forms: IForm[]): void {
       this.forms.push(...forms);
     },
-    setForms(forms: IForm[]) {
+    setForms(forms: IForm[]): void {
       this.forms = forms;
+    },
+    deleteForm(id: number): void {
+      const indice = this.forms.findIndex(form => form.id === id);
+      if(indice !== -1) {
+        this.forms.splice(indice, 1);
+      }
+    },
+    deleteQuestion(indexForm: number, indexQuestion: number): void {
+      this.forms[indexForm].questions.splice(indexQuestion, 1);
+    },
+    deleteOption(indexForm: number, indexQuestion: number, indexOption: number): void {
+      this.forms[indexForm].questions[indexQuestion].options.splice(indexOption, 1);
     }
   }
 })
