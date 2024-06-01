@@ -1,41 +1,32 @@
 <template>
   <q-expansion-item
-    :label="`${index + 1}) ${question.title}`"
-    :disable="disable"
+    v-model="showQuestion"
+    :class="['q-mb-xs shadow-transition shadow-3', showQuestion ? (index !== 0 ? 'shadow-up-24' : 'shadow-5') : '']"
+    :duration="500"
   >
+    <template #header>
+      <div class="full-width">
+        <strong>{{ index + 1 }}) </strong>
+        <span v-html="question.title"></span>
+      </div>
+    </template>
     <q-card>
-      <q-card-section class="flex justify-between">
-        <div class="text-h6">Alternativas:</div>
-        <div>
+      <q-card-section>
+        <div class="flex justify-end q-mb-md">
           <q-btn
             icon="mdi-pencil"
-            rounded
             color="secondary"
             class="q-mr-xs"
-            size="sm"
-          >
-            <q-tooltip>
-              <div class="text-h6">
-                Editar Questão
-              </div>
-            </q-tooltip>
-          </q-btn>
+            rounded
+            @click="editQuestion = true"
+          >Editar</q-btn>
           <q-btn
             icon="mdi-delete"
-            rounded
             color="negative"
-            size="sm"
+            rounded
             @click="showDialog.delete = true"
-          >
-            <q-tooltip>
-              <div class="text-h6">
-                Deletar Questão
-              </div>
-            </q-tooltip>
-          </q-btn>
+          >Deletar</q-btn>
         </div>
-      </q-card-section>
-      <q-card-section>
         <q-list bordered class="rounded-borders">
           <RenderOption
             v-for="(option, indexO) in question.options" :key="indexO"
@@ -47,6 +38,18 @@
       </q-card-section>
     </q-card>
   </q-expansion-item>
+  <q-dialog
+    v-model="editQuestion"
+    full-height
+    full-width
+    persistent
+  >
+    <EditQuestion
+      :question="question"
+      @allForms="$emit('allForms')"
+      @closeEdit="editQuestion = false"
+    />
+  </q-dialog>
   <q-dialog v-model="showDialog.delete">
     <q-card class="q-pb-sm">
       <q-card-section>
@@ -73,7 +76,8 @@ export default defineComponent({
   name: 'RenderQuestionFormComponent',
 
   components: {
-    RenderOption: defineAsyncComponent(() => import('components/form/listForms/RenderOptionFormComponent.vue'))
+    RenderOption: defineAsyncComponent(() => import('components/form/listForms/RenderOptionFormComponent.vue')),
+    EditQuestion: defineAsyncComponent(() => import('components/form/editForm/EditQuestionFormComponent.vue'))
   },
 
   props: {
@@ -87,7 +91,7 @@ export default defineComponent({
     }
   },
 
-  emits: ['deleteQuestion', 'deleteOption'],
+  emits: ['deleteQuestion', 'deleteOption', 'allForms'],
 
   data() {
     const disable = false;
@@ -95,10 +99,14 @@ export default defineComponent({
       update: false,
       delete: false,
     }
+    const showQuestion = false;
+    const editQuestion = false;
 
     return {
       disable,
-      showDialog
+      showDialog,
+      showQuestion,
+      editQuestion
     }
   },
 
@@ -109,6 +117,14 @@ export default defineComponent({
         .then(response => {
           if(response.data) {
             this.$emit('deleteQuestion');
+            this.showDialog.delete = false;
+            this.showQuestion = false;
+            this.$q.notify({
+              message: 'Questão deletada com sucesso',
+              color: 'green-4',
+              textColor: 'white',
+              icon: 'cloud_done'
+            });
           }
         })
         .catch(error => {

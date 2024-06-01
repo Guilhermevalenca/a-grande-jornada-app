@@ -1,5 +1,5 @@
 <template>
-  <h2>Pagina inicial</h2>
+  <div class="text-h2">Pagina inicial</div>
 </template>
 
 <script lang="ts">

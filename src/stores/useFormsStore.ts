@@ -26,7 +26,11 @@ export default defineStore('forms', {
   state: () => ({
     forms: [] as IForm[],
     reverse: false,
-    order: 'created' as 'created' | 'updated'
+    order: 'created' as 'created' | 'updated',
+    page: {
+      current: 1,
+      all: 0
+    }
   }),
   getters: {
     getForms(state): IForm[] {

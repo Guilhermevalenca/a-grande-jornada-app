@@ -7,7 +7,29 @@
     :loading="getDisable"
     :readonly="getDisable"
     :rules="rules"
-  />
+    class="col-12"
+  >
+    <template #before>
+      <div>{{index + 1}} - </div>
+    </template>
+    <template #after>
+      <q-btn
+        icon="mdi-minus"
+        rounded push
+        color="warning"
+        v-show="removeOptionAbilite"
+        @click="$emit('removeOption')"
+      >
+        <q-tooltip>
+          <div class="text-h6">Remover Opção</div>
+          <p>Cuidado, essa opção não poderá ser recuperada</p>
+        </q-tooltip>
+      </q-btn>
+    </template>
+  </q-input>
+  <div class="flex items-center">
+
+  </div>
   <q-toggle
     v-model="modelIsOpen"
     label="Pergunta aberta"
@@ -44,10 +66,18 @@ export default defineComponent({
     disable: {
       type: Boolean,
       required: true
+    },
+    index: {
+      type: Number,
+      required: true
+    },
+    removeOptionAbilite: {
+      type: Boolean,
+      required: true
     }
   },
 
-  emits: ['update:title', 'update:isOpen', 'update:correctAlternative'],
+  emits: ['update:title', 'update:isOpen', 'update:correctAlternative', 'removeOption'],
 
   computed: {
     modelTitle: {

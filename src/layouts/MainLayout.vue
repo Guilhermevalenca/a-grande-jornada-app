@@ -147,6 +147,11 @@ export default defineComponent({
       localStorage.removeItem('token');
       this.userStore.$reset();
       await this.$api.post('api/logout')
+        .then(() => {
+          this.$router.push({
+            name: 'home'
+          });
+        })
         .finally(() => this.$api.defaults.headers.common.Authorization = '');
     }
   }

@@ -1,157 +1,134 @@
 <template>
-  <q-list bordered class="rounded-borders">
-    <q-expansion-item
+  <q-list
+    bordered
+    class="rounded-borders"
+  >
+    <q-item
       v-for="(form, index) in formsStore.getForms" :key="index"
-      expand-separator
-      :label="form.title"
-      icon="mdi-form-dropdown"
-      :caption="`Formulário ${index + 1}`"
+      clickable
+      @click="showQuestions[index] = true"
+      class="shadow-1 q-mb-xs"
     >
-      <q-card>
-        <q-card-section class="flex justify-between">
-          <div class="text-h6">Questões:</div>
-          <q-btn
-            icon="mdi-delete"
-            color="negative"
-            push
-            @click="showDialogDelete = true; idFormDelete = Number(form.id)"
-            rounded
-          />
-        </q-card-section>
-        <q-card-section>
-          <q-list
-            bordered
-            class="rounded-borders"
-          >
-            <RenderQuestion
-              v-for="(question, indexQ) in form.questions"
-              :key="indexQ"
-              :question="question"
-              :index="indexQ"
-              @deleteQuestion="formsStore.deleteQuestion(index, indexQ)"
-              @deleteOption="indexO => formsStore.deleteOption(index, indexQ, indexO)"
-            />
-          </q-list>
-        </q-card-section>
-      </q-card>
-    </q-expansion-item>
+      <RenderForm
+        :form="form"
+        :index="index"
+        v-model:showQuestions="showQuestions[index]"
+        @allForms="allForms"
+      />
+    </q-item>
+    <q-item class="flex justify-end">
+      <q-pagination
+        v-model="formsStore.page.current"
+        :max="formsStore.page.all"
+        direction-links
+        round
+        @update:model-value="allForms()"
+      />
+    </q-item>
   </q-list>
-  <q-dialog v-model="showDialogDelete">
-    <q-card class="q-pa-sm">
-      <q-card-section>
-        <div class="flex justify-end">
-          <q-btn icon="close" flat v-close-popup
-            :disable="loading"
-          />
-        </div>
-        <div class="text-h6 text-center">Tem certeza?</div>
-      </q-card-section>
-      <q-card-section>
-        <div>Se você deletar este formulário, todas as suas informações serão perdidas!!!</div>
-      </q-card-section>
-      <q-card-actions class="flex justify-end">
-        <q-btn v-close-popup
-          :disable="loading"
-        >cancelar</q-btn>
-        <q-btn
-          color="negative"
-          @click="deleteForm"
-          :disable="loading"
-          :loading="loading"
-        >Tenho certeza</q-btn>
-      </q-card-actions>
-    </q-card>
-  </q-dialog>
-  <q-dialog v-model="showDialogMessage.open">
-    <q-card>
-      <q-card-section>
-        <div class="flex justify-end">
-          <q-btn icon="close" flat v-close-popup />
-        </div>
-        <div class="text-h6 text-center">Notificação!</div>
-      </q-card-section>
-      <q-card-section>
-        <div>{{showDialogMessage.text}}</div>
-      </q-card-section>
-      <q-card-actions class="flex justify-center">
-        <q-btn v-close-popup push>OK</q-btn>
-      </q-card-actions>
-    </q-card>
-  </q-dialog>
 </template>
 
 <script lang="ts">
 import { defineAsyncComponent, defineComponent } from 'vue';
-import useFormsStore from 'stores/useFormsStore';
+import useFormsStore, { IForm } from 'stores/useFormsStore';
 
 export default defineComponent({
   name: 'ListFormsComponent',
 
   components: {
-    RenderQuestion: defineAsyncComponent(() => import('components/form/listForms/RenderQuestionFormComponent.vue'))
+    RenderForm: defineAsyncComponent(() => import('components/form/listForms/RenderFormComponent.vue'))
   },
 
   data() {
     const formsStore = useFormsStore();
     const openActions: boolean[] = [];
-    const showDialogDelete = false;
-    const showDialogMessage = {
-      text: '',
-      open: false
-    }
-    const idFormDelete = 0;
-    const loading = false;
+    const showQuestions: boolean[] = [];
 
     return {
       formsStore,
       openActions,
-      showDialogDelete,
-      idFormDelete,
-      loading,
-      showDialogMessage
+      showQuestions,
     }
   },
 
   methods: {
     async allForms() {
-      await this.$api.get('api/form')
-        .then(response => {
-          this.formsStore.setForms(response.data);
+      const notify = this.$q.notify({
+        spinner: true,
+        message: this.formsStore.forms.length === 0 ? 'Carregando formulários' : 'Atualizando formulários',
+        // position: 'center',
+        spinnerSize: 'xl',
+        timeout: 0,
+        group: false
+      });
+      //request para pegar 5 formulários
+      await this.$api.get('api/form', {
+        params: {
+          page: this.formsStore.page.current * 2 - 1
+        }
+      })
+        .then(async (response) => {
+
+          const forms: IForm[] = [];
+          this.formsStore.page.all = response.data.all;
+          forms.push(...response.data.forms.data);
+          if(this.formsStore.forms.length === 0) {
+            this.formsStore.setForms(forms);
+          }
+
+          //Outra request para pegar mais 5 formulários
+          //Objetivo é diminuir a grande quantidade de dados de uma unica vez.
+
+          notify({
+            message: 'Estamos terminando de carregar seus formulários'
+          });
+          await this.$api.get('api/form', {
+            params: {
+              page: this.formsStore.page.current * 2
+            }
+          })
+            .then(response => {
+              this.formsStore.setForms([...forms, ...response.data.forms.data]);
+            })
+            .catch(error => {
+              console.log(error);
+              this.formsStore.setForms(forms);
+              notify({
+                spinner: false,
+                icon: 'warning',
+                timeout: 2000,
+                color: 'red-5',
+                message: 'Não foi possivel carregar todos os formulários'
+              });
+            })
+            .finally(() => {
+              notify({
+                icon: 'done',
+                spinner: false,
+                message: 'Formulários carregados com sucesso',
+                timeout: 2000,
+                color: 'green-4',
+              });
+            })
         })
         .catch(error => {
           console.log(error);
+          notify({
+            icon: 'warning',
+            spinner: false,
+            message: 'Não foi possivel carregar nenhum formulário',
+            timeout: 2000,
+            color: 'red-5'
+          })
         })
     },
-    async deleteForm() {
-      this.loading = true;
-      await this.$api.delete(`api/form/${this.idFormDelete}`)
-        .then(response => {
-          if(response.data) {
-            this.formsStore.deleteForm(this.idFormDelete);
-            this.idFormDelete = 0;
-            this.showDialogMessage = {
-              open: true,
-              text: 'Formulário apagado com sucesso'
-            }
-          }
-        })
-        .catch(error => {
-          console.log(error);
-          this.showDialogMessage = {
-            open: true,
-            text: 'Algo deu errado ao tentar apagar o formulário'
-          }
-        })
-        .finally(() => {
-          this.loading = false;
-          this.showDialogDelete = false;
-        })
-    }
+
   },
 
   mounted() {
     this.allForms();
-  }
+  },
+
 });
 </script>
 
