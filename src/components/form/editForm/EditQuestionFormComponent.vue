@@ -62,15 +62,16 @@ export default defineComponent({
   props: {
     question: {
       type: Object as PropType<IQuestion>,
-      required: true
+      required: true,
     }
   },
 
   emits: ['allForms', 'closeEdit'],
 
   data() {
-    const editQuestion = {
-      ...this.question
+    const editQuestion: IQuestion = {
+      ...this.question,
+      options: [...this.question.options]
     };
     const disable = false;
 
@@ -138,9 +139,6 @@ export default defineComponent({
     }
   },
 
-  mounted() {
-    console.log(this.editQuestion);
-  }
 });
 </script>
 

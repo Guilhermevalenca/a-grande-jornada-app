@@ -32,7 +32,6 @@
             v-for="(option, indexO) in question.options" :key="indexO"
             :option="option"
             :index="indexO"
-            @deleteOption="$emit('deleteOption', indexO)"
           />
         </q-list>
       </q-card-section>
@@ -91,7 +90,7 @@ export default defineComponent({
     }
   },
 
-  emits: ['deleteQuestion', 'deleteOption', 'allForms'],
+  emits: ['deleteQuestion', 'allForms'],
 
   data() {
     const disable = false;

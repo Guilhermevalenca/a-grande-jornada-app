@@ -2,7 +2,7 @@
   <q-item
     class="flex justify-between shadow-1"
   >
-    <div>{{index + 1}} - {{option.title ? option.title : 'Opção aberta'}}</div>
+    <div>{{index + 1}} - {{!option.isOpen ? option.title : 'Opção aberta'}}</div>
   </q-item>
 </template>
 

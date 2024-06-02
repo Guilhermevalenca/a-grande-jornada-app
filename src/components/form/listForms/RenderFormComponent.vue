@@ -3,7 +3,7 @@
     class="flex items-center"
   >
     <strong>{{index + 1}}) </strong>
-    <span class="q-ml-xs"> {{ form.title }} </span>
+    <span class="q-ml-xs"> {{ form.title }}</span>
   </q-item-label>
   <q-item-section class="flex items-end">
     <q-icon
@@ -85,7 +85,6 @@
             :question="question"
             :index="indexQ"
             @deleteQuestion="formsStore.deleteQuestion(index, indexQ)"
-            @deleteOption="indexO => formsStore.deleteOption(index, indexQ, indexO)"
             @allForms="$emit('allForms')"
           />
         </q-list>

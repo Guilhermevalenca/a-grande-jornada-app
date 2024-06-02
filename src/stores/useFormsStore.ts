@@ -26,32 +26,18 @@ export default defineStore('forms', {
   state: () => ({
     forms: [] as IForm[],
     reverse: false,
-    order: 'created' as 'created' | 'updated',
+    order: 'updated' as 'created' | 'updated',
     page: {
       current: 1,
-      all: 0
+      all: 0,
     }
   }),
   getters: {
     getForms(state): IForm[] {
-      let forms: IForm[];
-      if(state.order === 'updated') {
+      const forms: IForm[] = [...state.forms];
+      if(state.order === 'created') {
         //Organizando formulários por data de atualização
-        forms = [...state.forms].sort((a: IForm, b:IForm) => {
-          if (!a.updated_at && b.updated_at) {
-            return -1;
-          }
-          if (!b.updated_at && a.updated_at) {
-            return 1;
-          }
-
-          const dateA = a.updated_at ? new Date(a.updated_at) : new Date(0);
-          const dateB = b.updated_at ? new Date(b.updated_at) : new Date(0);
-
-          return dateA.getTime() - dateB.getTime();
-        });
-      } else {
-        forms = state.forms;
+        forms.sort((a: IForm, b:IForm) => (Number(a.id) - Number(b.id)));
       }
       return state.reverse ? forms.reverse() : forms;
     }
@@ -77,6 +63,9 @@ export default defineStore('forms', {
     },
     deleteOption(indexForm: number, indexQuestion: number, indexOption: number): void {
       this.forms[indexForm].questions[indexQuestion].options.splice(indexOption, 1);
+    },
+    handlerReverse() {
+      this.reverse = !this.reverse;
     }
   }
 })

@@ -4,6 +4,39 @@
     class="rounded-borders"
   >
     <q-item
+      class="shadow-1"
+    >
+      <q-item-section class="q-pb-lg">
+        <div class="row justify-end">
+          <q-select
+            class="col-2"
+            v-model="orderBy"
+            :options="optionsOrder"
+            outlined
+            label="Ordenar por:"
+          />
+          <q-btn
+            :icon="`mdi-${formsStore.reverse ? 'arrow-up-bold' : 'arrow-down-bold'}`"
+            @click="formsStore.handlerReverse()"
+            flat
+            push
+          >
+            <q-tooltip class="text-h6">
+              {{formsStore.reverse ? 'Ordem crescente' : 'Ordem decrescente'}}
+            </q-tooltip>
+          </q-btn>
+          <q-icon
+            name="mdi-help"
+            size="xs"
+          >
+            <q-tooltip class="text-h6">
+              Mudar a ordem, afeta apenas a pagina atual
+            </q-tooltip>
+          </q-icon>
+        </div>
+      </q-item-section>
+    </q-item>
+    <q-item
       v-for="(form, index) in formsStore.getForms" :key="index"
       clickable
       @click="showQuestions[index] = true"
@@ -43,11 +76,22 @@ export default defineComponent({
     const formsStore = useFormsStore();
     const openActions: boolean[] = [];
     const showQuestions: boolean[] = [];
+    const optionsOrder = [
+      {
+        label: 'Criado',
+        value: 'created',
+      },
+      {
+        label: 'Atualizado',
+        value: 'updated'
+      }
+    ];
 
     return {
       formsStore,
       openActions,
       showQuestions,
+      optionsOrder,
     }
   },
 
@@ -64,7 +108,7 @@ export default defineComponent({
       //request para pegar 5 formulários
       await this.$api.get('api/form', {
         params: {
-          page: this.formsStore.page.current * 2 - 1
+          page: this.formsStore.page.current * 2 - 1,
         }
       })
         .then(async (response) => {
@@ -84,7 +128,7 @@ export default defineComponent({
           });
           await this.$api.get('api/form', {
             params: {
-              page: this.formsStore.page.current * 2
+              page: this.formsStore.page.current * 2,
             }
           })
             .then(response => {
@@ -122,7 +166,17 @@ export default defineComponent({
           })
         })
     },
+  },
 
+  computed: {
+    orderBy: {
+      get() {
+        return this.formsStore.order === 'created' ? 'Criado' : 'Atualizado';
+      },
+      set($value: {label: string, value: 'created' | 'updated'}) {
+        this.formsStore.order = $value.value;
+      }
+    },
   },
 
   mounted() {
