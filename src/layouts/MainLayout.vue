@@ -15,16 +15,18 @@
           A grande jornada
         </q-toolbar-title>
         <div>
-          <q-icon
-            name="mdi-theme-light-dark"
-            size="sm"
+          <q-btn
+            icon="mdi-theme-light-dark"
             @click="$q.dark.toggle()"
-            class="q-mr-sm"
+            round
+            flat
+            push
+            class="q-mr-xs"
           >
             <q-tooltip>
               Alterar tema!
             </q-tooltip>
-          </q-icon>
+          </q-btn>
         </div>
         <div v-if="userStore.id">
           <q-btn-dropdown

@@ -7,7 +7,7 @@
       class="shadow-1"
     >
       <q-item-section class="q-pb-lg">
-        <div class="row justify-end">
+        <div class="row justify-end items-center">
           <q-select
             class="col-2"
             v-model="orderBy"
@@ -20,6 +20,8 @@
             @click="formsStore.handlerReverse()"
             flat
             push
+            size="lg"
+            round
           >
             <q-tooltip class="text-h6">
               {{formsStore.reverse ? 'Ordem crescente' : 'Ordem decrescente'}}
@@ -27,7 +29,7 @@
           </q-btn>
           <q-icon
             name="mdi-help"
-            size="xs"
+            size="sm"
           >
             <q-tooltip class="text-h6">
               Mudar a ordem, afeta apenas a pagina atual
