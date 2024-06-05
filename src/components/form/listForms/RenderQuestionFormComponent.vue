@@ -1,7 +1,10 @@
 <template>
   <q-expansion-item
     v-model="showQuestion"
-    :class="['q-mb-xs shadow-transition shadow-3', showQuestion ? (index !== 0 ? 'shadow-up-24' : 'shadow-5') : '']"
+    :class="[
+      'q-mb-xs shadow-transition shadow-3',
+      showQuestion ? (index !== 0 ? 'shadow-up-24' : 'shadow-5') : '',
+    ]"
     :duration="500"
   >
     <template #header>
@@ -19,17 +22,20 @@
             class="q-mr-xs"
             rounded
             @click="editQuestion = true"
-          >Editar</q-btn>
+            >Editar</q-btn
+          >
           <q-btn
             icon="mdi-delete"
             color="negative"
             rounded
             @click="showDialog.delete = true"
-          >Deletar</q-btn>
+            >Deletar</q-btn
+          >
         </div>
         <q-list bordered class="rounded-borders">
           <RenderOption
-            v-for="(option, indexO) in question.options" :key="indexO"
+            v-for="(option, indexO) in question.options"
+            :key="indexO"
             :option="option"
             :index="indexO"
           />
@@ -37,12 +43,7 @@
       </q-card-section>
     </q-card>
   </q-expansion-item>
-  <q-dialog
-    v-model="editQuestion"
-    full-height
-    full-width
-    persistent
-  >
+  <q-dialog v-model="editQuestion" full-height full-width persistent>
     <EditQuestion
       :question="question"
       @allForms="$emit('allForms')"
@@ -58,7 +59,10 @@
         <div class="text-h6 text-center">Tem certeza?</div>
       </q-card-section>
       <q-card-section>
-        <div>A questão: <strong>"{{question.title}}"</strong> será deletada permanentemente, ocasionando também a perda de suas Alternativas.</div>
+        <div>
+          A questão: <strong>"{{ question.title }}"</strong> será deletada
+          permanentemente, ocasionando também a perda de suas Alternativas.
+        </div>
       </q-card-section>
       <q-card-actions class="flex justify-center">
         <q-btn color="negative" push @click="deleteQuestion">Apagar!</q-btn>
@@ -75,19 +79,23 @@ export default defineComponent({
   name: 'RenderQuestionFormComponent',
 
   components: {
-    RenderOption: defineAsyncComponent(() => import('components/form/listForms/RenderOptionFormComponent.vue')),
-    EditQuestion: defineAsyncComponent(() => import('components/form/editForm/EditQuestionFormComponent.vue'))
+    RenderOption: defineAsyncComponent(
+      () => import('components/form/listForms/RenderOptionFormComponent.vue')
+    ),
+    EditQuestion: defineAsyncComponent(
+      () => import('components/form/editForm/EditQuestionFormComponent.vue')
+    ),
   },
 
   props: {
     question: {
       type: Object as PropType<IQuestion>,
-      required: true
+      required: true,
     },
     index: {
       type: Number,
-      required: true
-    }
+      required: true,
+    },
   },
 
   emits: ['deleteQuestion', 'allForms'],
@@ -97,7 +105,7 @@ export default defineComponent({
     const showDialog = {
       update: false,
       delete: false,
-    }
+    };
     const showQuestion = false;
     const editQuestion = false;
 
@@ -105,16 +113,17 @@ export default defineComponent({
       disable,
       showDialog,
       showQuestion,
-      editQuestion
-    }
+      editQuestion,
+    };
   },
 
   methods: {
     async deleteQuestion() {
       this.disable = true;
-      await this.$api.delete(`api/form/question/${this.question.id}`)
-        .then(response => {
-          if(response.data) {
+      await this.$api
+        .delete(`api/form/question/${this.question.id}`)
+        .then((response) => {
+          if (response.data) {
             this.$emit('deleteQuestion');
             this.showDialog.delete = false;
             this.showQuestion = false;
@@ -122,21 +131,19 @@ export default defineComponent({
               message: 'Questão deletada com sucesso',
               color: 'green-4',
               textColor: 'white',
-              icon: 'cloud_done'
+              icon: 'cloud_done',
             });
           }
         })
-        .catch(error => {
+        .catch((error) => {
           console.log(error);
         })
         .finally(() => {
           this.disable = false;
         });
-    }
-  }
+    },
+  },
 });
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>

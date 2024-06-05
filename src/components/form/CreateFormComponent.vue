@@ -12,13 +12,18 @@
       :readonly="loading"
       class="col-11"
     />
-    <br>
-    <q-card v-for="(question, index) in form.questions" :key="index" class="q-mb-md">
+    <br />
+    <q-card
+      v-for="(question, index) in form.questions"
+      :key="index"
+      class="q-mb-md"
+    >
       <q-card-actions class="flex justify-between">
-        <div class="text-h6">Questão {{index + 1}}</div>
+        <div class="text-h6">Questão {{ index + 1 }}</div>
         <q-btn
           icon="mdi-minus"
-          rounded push
+          rounded
+          push
           color="negative"
           v-if="Number(index) !== 0 || form.questions.length > 1"
           @click="removeQuestion(Number(index))"
@@ -38,11 +43,12 @@
         />
       </q-card-section>
     </q-card>
-    <br>
+    <br />
     <div class="flex justify-end q-mt-sm">
       <q-btn
         icon="mdi-plus"
-        rounded push
+        rounded
+        push
         color="primary"
         @click="addQuestion"
         :disable="loading"
@@ -56,10 +62,12 @@
       <q-btn
         type="submit"
         color="primary"
-        rounded push
+        rounded
+        push
         size="lg"
         :loading="loading"
-      >Criar Formulário</q-btn>
+        >Criar Formulário</q-btn
+      >
     </div>
   </q-form>
 </template>
@@ -72,7 +80,9 @@ export default defineComponent({
   name: 'CreateFormComponent',
 
   components: {
-    QuestionForm: defineAsyncComponent(() => import('components/form/createForm/QuestionFormComponent.vue'))
+    QuestionForm: defineAsyncComponent(
+      () => import('components/form/createForm/QuestionFormComponent.vue')
+    ),
   },
 
   emits: ['toListForm'],
@@ -87,17 +97,17 @@ export default defineComponent({
             {
               title: '',
               isOpen: false,
-              correctAlternative: false
-            }
-          ]
-        }
-      ]
-    }
+              correctAlternative: false,
+            },
+          ],
+        },
+      ],
+    };
     const loading = false;
     const rules = [
       (value: string): string | boolean => {
         return value ? !!value : 'É necessário adicionar um titulo';
-      }
+      },
     ];
     const formStore = useFormsStore();
 
@@ -105,8 +115,8 @@ export default defineComponent({
       form,
       loading,
       rules,
-      formStore
-    }
+      formStore,
+    };
   },
 
   methods: {
@@ -117,9 +127,9 @@ export default defineComponent({
           {
             title: '',
             isOpen: false,
-            correctAlternative: false
-          }
-        ]
+            correctAlternative: false,
+          },
+        ],
       });
     },
     removeQuestion(index: number) {
@@ -135,32 +145,31 @@ export default defineComponent({
               {
                 title: '',
                 isOpen: false,
-                correctAlternative: false
-              }
-            ]
-          }
-        ]
-      }
+                correctAlternative: false,
+              },
+            ],
+          },
+        ],
+      };
     },
     async submit() {
       this.loading = true;
-      await this.$api.post('api/form', this.form)
-        .then(response => {
-          if(response.data.success) {
+      await this.$api
+        .post('api/form', this.form)
+        .then((response) => {
+          if (response.data.success) {
             this.formStore.addForm(this.form);
             this.resetForm();
             this.$emit('toListForm');
           }
         })
-        .catch(error => {
+        .catch((error) => {
           console.log(error);
         })
-        .finally(() => this.loading = false);
-    }
-  }
+        .finally(() => (this.loading = false));
+    },
+  },
 });
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>

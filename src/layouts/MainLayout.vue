@@ -11,7 +11,7 @@
           @click="toggleLeftDrawer"
         />
 
-        <q-toolbar-title>
+        <q-toolbar-title @click="$router.push({ name: 'home' })">
           A grande jornada
         </q-toolbar-title>
         <div>
@@ -23,26 +23,30 @@
             push
             class="q-mr-xs"
           >
-            <q-tooltip>
-              Alterar tema!
-            </q-tooltip>
+            <q-tooltip> Alterar tema! </q-tooltip>
           </q-btn>
         </div>
         <div v-if="userStore.id">
-          <q-btn-dropdown
-            :label="userStore.name"
-          >
+          <q-btn-dropdown :label="userStore.name">
             <div class="row no-wrap q-pa-md">
               <div class="column items-center">
                 <q-avatar>
-                  <img src="https://cdn.quasar.dev/img/boy-avatar.png" alt="avatar">
+                  <img
+                    src="https://cdn.quasar.dev/img/boy-avatar.png"
+                    alt="avatar"
+                  />
                 </q-avatar>
                 <div class="text-subtitle1">
-                  {{userStore.name}}
+                  {{ userStore.name }}
                 </div>
 
                 <q-list class="q-mt-md rounded-borders" separator bordered>
-                  <q-item clickable class="flex items-center">
+                  <q-item
+                    clickable
+                    class="flex items-center"
+                    :to="{ name: 'profile' }"
+                    :active="$route.name === 'profile'"
+                  >
                     <q-icon name="mdi-account-circle" />
                     Meu perfil
                   </q-item>
@@ -51,11 +55,7 @@
                     Configurações
                   </q-item>
                   <q-item>
-                    <q-btn
-                      color="negative"
-                      push
-                      @click="logout"
-                    >
+                    <q-btn color="negative" push @click="logout">
                       Desconectar
                     </q-btn>
                   </q-item>
@@ -65,22 +65,14 @@
           </q-btn-dropdown>
         </div>
         <div v-else>
-          <q-btn push :to="{name: 'auth'}">Login</q-btn>
+          <q-btn push :to="{ name: 'auth' }">Login</q-btn>
         </div>
       </q-toolbar>
     </q-header>
 
-    <q-drawer
-      v-model="leftDrawerOpen"
-      show-if-above
-      bordered
-    >
+    <q-drawer v-model="leftDrawerOpen" show-if-above bordered>
       <q-list>
-        <q-item-label
-          header
-        >
-          Navegação
-        </q-item-label>
+        <q-item-label header> Navegação </q-item-label>
 
         <EssentialLink
           v-for="link in linksList"
@@ -100,62 +92,65 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue';
-import EssentialLink, { EssentialLinkProps } from 'components/EssentialLink.vue';
+import EssentialLink, {
+  EssentialLinkProps,
+} from 'components/EssentialLink.vue';
 import useUserStore from 'stores/useUserStore';
 
 export default defineComponent({
   name: 'MainLayout',
 
   components: {
-    EssentialLink
+    EssentialLink,
   },
 
-  data () {
+  data() {
     const userStore = useUserStore();
     const linksList: EssentialLinkProps[] = [
       {
         title: 'Pagina inicial',
         // caption: 'quasar.dev',
         icon: 'mdi-home',
-        name: 'home'
+        name: 'home',
       },
       {
         title: 'Formulários',
         caption: 'Seus formulários',
         icon: 'mdi-form-select',
         name: 'forms',
-        isLogged: true
+        isLogged: true,
       },
       {
         title: 'Funcionalidade 2',
         caption: 'Só deus sabe que desgraça isso faz',
         icon: 'school',
-        name: ''
-      }
+        name: '',
+      },
     ];
 
     return {
       linksList,
       leftDrawerOpen: false,
-      userStore
-    }
+      userStore,
+    };
   },
 
   methods: {
-    toggleLeftDrawer () {
+    toggleLeftDrawer() {
       this.leftDrawerOpen = !this.leftDrawerOpen;
     },
     async logout() {
       localStorage.removeItem('token');
       this.userStore.$reset();
-      await this.$api.post('api/logout')
+      await this.$api
+        .post('api/logout')
         .then(() => {
           this.$router.push({
-            name: 'home'
+            name: 'home',
           });
         })
-        .finally(() => this.$api.defaults.headers.common.Authorization = '');
-    }
-  }
+        .finally(() => (this.$api.defaults.headers.common.Authorization = ''));
+    },
+  },
 });
 </script>

@@ -1,8 +1,8 @@
 <template>
-  <q-item
-    class="flex justify-between shadow-1"
-  >
-    <div>{{index + 1}} - {{!option.isOpen ? option.title : 'Opção aberta'}}</div>
+  <q-item class="flex justify-between shadow-1">
+    <div>
+      {{ index + 1 }} - {{ !option.isOpen ? option.title : 'Opção aberta' }}
+    </div>
   </q-item>
 </template>
 
@@ -16,17 +16,14 @@ export default defineComponent({
   props: {
     option: {
       type: Object as PropType<IOption>,
-      required: true
+      required: true,
     },
     index: {
       type: Number,
-      required: true
-    }
+      required: true,
+    },
   },
-
 });
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>

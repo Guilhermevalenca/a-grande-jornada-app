@@ -10,12 +10,13 @@
     class="col-12"
   >
     <template #before>
-      <div>{{index + 1}} - </div>
+      <div>{{ index + 1 }} -</div>
     </template>
     <template #after>
       <q-btn
         icon="mdi-minus"
-        rounded push
+        rounded
+        push
         color="warning"
         v-show="removeOptionAbilite"
         @click="$emit('removeOption')"
@@ -27,9 +28,7 @@
       </q-btn>
     </template>
   </q-input>
-  <div class="flex items-center">
-
-  </div>
+  <div class="flex items-center"></div>
   <q-toggle
     v-model="modelIsOpen"
     label="Pergunta aberta"
@@ -43,7 +42,6 @@
   />
 </template>
 
-
 <script lang="ts">
 import { defineComponent } from 'vue';
 
@@ -53,47 +51,52 @@ export default defineComponent({
   props: {
     title: {
       type: String,
-      default: ''
+      default: '',
     },
     isOpen: {
       type: Boolean,
-      default: false
+      default: false,
     },
     correctAlternative: {
       type: Boolean,
-      default: false
+      default: false,
     },
     disable: {
       type: Boolean,
-      required: true
+      required: true,
     },
     index: {
       type: Number,
-      required: true
+      required: true,
     },
     removeOptionAbilite: {
       type: Boolean,
-      required: true
-    }
+      required: true,
+    },
   },
 
-  emits: ['update:title', 'update:isOpen', 'update:correctAlternative', 'removeOption'],
+  emits: [
+    'update:title',
+    'update:isOpen',
+    'update:correctAlternative',
+    'removeOption',
+  ],
 
   computed: {
     modelTitle: {
       get(): string {
-          return this.title;
+        return this.title;
       },
       set($value: string) {
-          this.$emit('update:title', $value);
-      }
+        this.$emit('update:title', $value);
+      },
     },
     modelIsOpen: {
       get(): boolean {
         return this.isOpen;
       },
       set($value: boolean) {
-        if($value) {
+        if ($value) {
           this.modelCorrectAlternative = false;
           this.salveText = this.modelTitle;
           this.modelTitle = '';
@@ -101,7 +104,7 @@ export default defineComponent({
           this.modelTitle = this.salveText;
         }
         this.$emit('update:isOpen', $value);
-      }
+      },
     },
     modelCorrectAlternative: {
       get(): boolean {
@@ -109,29 +112,29 @@ export default defineComponent({
       },
       set($value: boolean) {
         this.$emit('update:correctAlternative', $value);
-      }
+      },
     },
     getDisable(): boolean {
       return this.disable;
-    }
+    },
   },
 
   data() {
     const salveText = '';
     const rules = [
       (value: string): string | boolean => {
-        return (!!value || this.modelIsOpen) ? true : 'É necessário preencher este campo';
-      }
+        return !!value || this.modelIsOpen
+          ? true
+          : 'É necessário preencher este campo';
+      },
     ];
 
     return {
       salveText,
-      rules
-    }
-  }
+      rules,
+    };
+  },
 });
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>

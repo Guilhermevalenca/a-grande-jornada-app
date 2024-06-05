@@ -12,23 +12,24 @@ export default defineComponent({
   methods: {
     async isAuthUser() {
       const token = localStorage.getItem('token');
-      if(token) {
-        const userStore = useUserStore()
+      if (token) {
+        const userStore = useUserStore();
         this.$api.defaults.headers.common.Authorization = `Bearer ${token}`;
-        await this.$api.get('api/user')
-          .then(response => {
+        await this.$api
+          .get('api/user')
+          .then((response) => {
             userStore.setUser(response.data);
           })
           .catch(() => {
             localStorage.removeItem('token');
             this.$api.defaults.headers.common.Authorization = '';
-          })
+          });
       }
-    }
+    },
   },
 
   created() {
     this.isAuthUser();
-  }
+  },
 });
 </script>

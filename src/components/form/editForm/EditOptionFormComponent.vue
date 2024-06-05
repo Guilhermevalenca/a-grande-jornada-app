@@ -42,18 +42,18 @@ export default defineComponent({
   props: {
     option: {
       type: Object as PropType<IOption>,
-      required: true
+      required: true,
     },
     disable: {
       type: Boolean,
-      required: true
-    }
+      required: true,
+    },
   },
 
   emits: ['update:option', 'removeOption'],
 
   data: () => ({
-    saveTitle: ''
+    saveTitle: '',
   }),
 
   computed: {
@@ -63,29 +63,28 @@ export default defineComponent({
       },
       set($value: IOption) {
         this.$emit('update:option', $value);
-      }
+      },
     },
-
   },
 
   methods: {
     relationshipTitleAndIsOpen(value: boolean) {
-      if(value) {
+      if (value) {
         this.saveTitle = this.modelOption.title;
         this.modelOption.title = '';
       } else {
         this.modelOption.title = this.saveTitle;
       }
-    }
+    },
   },
 
   mounted() {
     this.modelOption.isOpen = Boolean(this.modelOption.isOpen);
-    this.modelOption.correctAlternative = Boolean(this.modelOption.correctAlternative);
-  }
+    this.modelOption.correctAlternative = Boolean(
+      this.modelOption.correctAlternative
+    );
+  },
 });
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>

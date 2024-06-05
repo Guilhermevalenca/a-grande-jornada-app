@@ -1,14 +1,11 @@
 <template>
   <q-item
     clickable
-    :to="{name: name}"
+    :to="{ name: name }"
     :active="$route.name === name"
     v-if="!isLogged || !!userStore.id"
   >
-    <q-item-section
-      v-if="icon"
-      avatar
-    >
+    <q-item-section v-if="icon" avatar>
       <q-icon :name="icon" />
     </q-item-section>
 
@@ -36,36 +33,36 @@ export default defineComponent({
   props: {
     title: {
       type: String,
-      required: true
+      required: true,
     },
 
     caption: {
       type: String,
-      default: ''
+      default: '',
     },
 
     name: {
       type: String,
-      default: '#'
+      default: '#',
     },
 
     icon: {
       type: String,
-      default: ''
+      default: '',
     },
 
     isLogged: {
       type: Boolean,
-      default: false
-    }
+      default: false,
+    },
   },
 
   data() {
     const userStore = useUserStore();
 
     return {
-      userStore
-    }
-  }
+      userStore,
+    };
+  },
 });
 </script>
