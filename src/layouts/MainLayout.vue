@@ -126,6 +126,12 @@ export default defineComponent({
         icon: 'school',
         name: '',
       },
+      {
+        title: 'Aulas',
+        caption: '',
+        icon: 'mdi-book-open-page-variant',
+        name: 'posts',
+      }
     ];
 
     return {

@@ -29,6 +29,12 @@ const routes: RouteRecordRaw[] = [
         name: 'profile',
         beforeEnter: [logged],
       },
+      {
+        path: 'posts',
+        component: () => import('pages/PostsPage.vue'),
+        name:'posts',
+        beforeEnter: [noLogged],
+      },
     ],
   },
 

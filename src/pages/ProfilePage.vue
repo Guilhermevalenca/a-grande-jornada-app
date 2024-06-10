@@ -132,7 +132,7 @@ export default defineComponent({
       rulesConfirmationPassword: [
         ...rulesDefault,
         (value: string): boolean | string => {
-          return value === this.editPassword.password_confirmation
+          return value === editPassword.password_confirmation
             ? true
             : 'Senhas diferentes!';
         },
