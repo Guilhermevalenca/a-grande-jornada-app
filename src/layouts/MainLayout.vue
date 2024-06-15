@@ -128,7 +128,13 @@ export default defineComponent({
         caption: 'Só deus sabe que desgraça isso faz',
         icon: 'school',
         name: ''
-      }
+      },
+      {
+        title: 'Aulas',
+        caption: 'PostsPage',
+        icon: 'mdiNotebook',
+        name: ''
+      },
     ];
 
     return {
