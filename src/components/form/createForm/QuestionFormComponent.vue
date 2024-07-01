@@ -1,47 +1,39 @@
 <template>
-  <q-editor
-    v-model="modelTitle"
-    outlined
-    placeholder="Escreva a pergunta aqui"
-    :readonly="getDisable"
-    :loading="getDisable"
-    :rules="rules"
-    type="textarea"
-  />
-  <br />
-  <q-card>
-    <!--    <q-card-actions class="flex justify-between">-->
-    <!--      <div class="text-h6">Opção {{index + 1}}</div>-->
-    <!--      <q-btn-->
-    <!--        icon="mdi-minus"-->
-    <!--        rounded push-->
-    <!--        color="warning"-->
-    <!--        v-if="Number(index) !== 0 || modelOptions.length > 1"-->
-    <!--        @click="removeOption(Number(index))"-->
-    <!--        :disable="getDisable"-->
-    <!--      >-->
-    <!--        <q-tooltip>-->
-    <!--          <div class="text-h6">Remove Opção</div>-->
-    <!--          <p>Cuidado, essa opção não poderá ser recuperada</p>-->
-    <!--        </q-tooltip>-->
-    <!--      </q-btn>-->
-    <!--    </q-card-actions>-->
-    <q-card-section
-      class="row"
-      v-for="(option, index) in modelOptions"
-      :key="index"
-    >
-      <OptionForm
-        v-model:title="option.title"
-        v-model:isOpen="option.isOpen"
-        v-model:correctAlternative="option.correctAlternative"
-        :disable="getDisable"
-        :index="index"
-        :removeOptionAbilite="Number(index) !== 0 || modelOptions.length > 1"
-        @removeOption="removeOption(Number(index))"
-      />
-    </q-card-section>
-  </q-card>
+  <q-card-section>
+    <q-select
+      v-model="typeQuestion"
+      @update:modelValue="$emit('update:type', typeQuestion.value)"
+      :options="optionsType"
+      label="Tipo da questão:"
+      outlined
+    />
+  </q-card-section>
+  <q-card-section>
+    <q-editor
+      v-model="titleQuestion"
+      @update:modelValue="$emit('update:title', titleQuestion)"
+      outlined
+      placeholder="Escreva a pergunta aqui"
+      :readonly="disable"
+      :loading="disable"
+      :rules="rules"
+      type="textarea"
+    />
+  </q-card-section>
+  <q-card-section
+    class="row"
+    v-for="(option, index) in options"
+    :key="index"
+  >
+    <OptionForm
+      v-model:title="option.title"
+      v-model:correctAlternative="option.correctAlternative"
+      :disable="disable"
+      :index="index"
+      :removeOptionAbilite="Number(index) !== 0 || options.length > 1"
+      @removeOption="removeOption(Number(index))"
+    />
+  </q-card-section>
   <br />
   <div class="flex justify-end">
     <q-btn
@@ -50,7 +42,7 @@
       push
       color="secondary"
       @click="addOption"
-      :disable="getDisable"
+      :disable="disable"
     >
       <q-tooltip>
         <div class="text-h6">Adicionar Opção</div>
@@ -85,31 +77,13 @@ export default defineComponent({
       type: Boolean,
       required: true,
     },
+    type: {
+      type: String as PropType<'isOpen' | 'only' | 'multiple'>,
+      required: true
+    }
   },
 
-  emits: ['update:title', 'update:options'],
-
-  computed: {
-    modelTitle: {
-      get(): string {
-        return this.title;
-      },
-      set($value: string) {
-        this.$emit('update:title', $value);
-      },
-    },
-    modelOptions: {
-      get(): IOption[] {
-        return this.options;
-      },
-      set($value: string) {
-        this.$emit('update:options', $value);
-      },
-    },
-    getDisable(): boolean {
-      return this.disable;
-    },
-  },
+  emits: ['update:title', 'update:options', 'update:type'],
 
   data() {
     const rules = [
@@ -119,38 +93,51 @@ export default defineComponent({
     ];
     return {
       rules,
+      titleQuestion: this.title,
+      optionsQuestion: this.options,
+      typeQuestion: {
+        label: 'Única resposta',
+        value: this.type
+      },
+      optionsType: [
+        {
+          label: 'Única resposta',
+          value: 'only'
+        },
+        {
+          label: 'Múltiplas respostas',
+          value: 'multiple'
+        },
+        {
+          label: 'Pergunta aberta',
+          value: 'isOpen'
+        }
+      ]
     };
   },
 
   methods: {
     addOption() {
-      this.modelOptions.push({
+      this.optionsQuestion.push({
         title: '',
-        isOpen: false,
         correctAlternative: false,
-      });
+      } as IOption);
+      this.$emit('update:options', this.optionsQuestion);
     },
     removeOption(index: number) {
-      this.modelOptions.splice(index, 1);
-    },
-    uploadIt() {
-      this.$q.notify({
-        message: 'Server unavailable. Check connectivity.',
-        color: 'red-5',
-        textColor: 'white',
-        icon: 'warning',
-      });
-    },
-    saveWork() {
-      this.$q.notify({
-        message: 'Saved your text to local storage',
-        color: 'green-4',
-        textColor: 'white',
-        icon: 'cloud_done',
-      });
+      this.optionsQuestion.splice(index, 1);
+      this.$emit('update:options', this.optionsQuestion);
     },
   },
+
+  watch: {
+    'typeQuestion.value'($new) {
+      if($new === 'isOpen'){
+        this.$emit('update:options', []);
+      }
+    }
+  }
+
 });
 </script>
 
-<style scoped></style>

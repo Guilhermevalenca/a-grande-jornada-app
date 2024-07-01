@@ -4,7 +4,7 @@
     outlined
     class="q-mb-sm"
     placeholder="Opção..."
-    :disable="Boolean(disable || modelOption.isOpen)"
+    :disable="disable"
   >
     <template #after>
       <q-btn
@@ -21,11 +21,6 @@
       </q-btn>
     </template>
   </q-input>
-  <q-toggle
-    label="Pergunta aberta"
-    v-model="modelOption.isOpen"
-    @update:modelValue="relationshipTitleAndIsOpen($event)"
-  />
   <q-toggle
     label="Essa é a alternativa correta ?"
     v-model="modelOption.correctAlternative"
@@ -79,7 +74,6 @@ export default defineComponent({
   },
 
   mounted() {
-    this.modelOption.isOpen = Boolean(this.modelOption.isOpen);
     this.modelOption.correctAlternative = Boolean(
       this.modelOption.correctAlternative
     );

@@ -30,11 +30,6 @@
   </q-input>
   <div class="flex items-center"></div>
   <q-toggle
-    v-model="modelIsOpen"
-    label="Pergunta aberta"
-    :disable="getDisable"
-  />
-  <q-toggle
     v-show="!modelIsOpen"
     v-model="modelCorrectAlternative"
     label="Essa é a alternativa correta ?"

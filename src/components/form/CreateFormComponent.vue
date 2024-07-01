@@ -39,6 +39,7 @@
         <QuestionForm
           v-model:title="question.title"
           v-model:options="question.options"
+          v-model:type="question.type"
           :disable="loading"
         />
       </q-card-section>
@@ -74,7 +75,7 @@
 
 <script lang="ts">
 import { defineAsyncComponent, defineComponent } from 'vue';
-import useFormsStore, { IForm } from 'stores/useFormsStore';
+import useFormsStore, { IForm, IQuestion } from 'stores/useFormsStore';
 
 export default defineComponent({
   name: 'CreateFormComponent',
@@ -93,10 +94,10 @@ export default defineComponent({
       questions: [
         {
           title: '',
+          type: 'only',
           options: [
             {
               title: '',
-              isOpen: false,
               correctAlternative: false,
             },
           ],
@@ -123,14 +124,14 @@ export default defineComponent({
     addQuestion() {
       this.form.questions.push({
         title: '',
+        type: 'only',
         options: [
           {
             title: '',
-            isOpen: false,
             correctAlternative: false,
           },
         ],
-      });
+      } as IQuestion);
     },
     removeQuestion(index: number) {
       this.form.questions.splice(index, 1);
@@ -141,16 +142,16 @@ export default defineComponent({
         questions: [
           {
             title: '',
+            type: 'only',
             options: [
               {
                 title: '',
-                isOpen: false,
                 correctAlternative: false,
               },
             ],
           },
         ],
-      };
+      } as IForm;
     },
     async submit() {
       this.loading = true;

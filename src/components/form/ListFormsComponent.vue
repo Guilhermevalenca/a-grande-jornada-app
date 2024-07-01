@@ -33,11 +33,17 @@
       </q-item-section>
     </q-item>
     <q-item
+      v-show="formsStore.forms.length === 0"
+    >
+      <div class="text-h4"><i>Carregando...</i></div>
+    </q-item>
+    <q-item
       v-for="(form, index) in formsStore.getForms"
       :key="index"
       clickable
       @click="showQuestions[index] = true"
       class="shadow-1 q-mb-xs"
+      :disable="loadingForms"
     >
       <RenderForm
         :form="form"
@@ -60,15 +66,16 @@
 
 <script lang="ts">
 import { defineAsyncComponent, defineComponent } from 'vue';
-import useFormsStore, { IForm } from 'stores/useFormsStore';
+import useFormsStore from 'stores/useFormsStore';
 
 export default defineComponent({
   name: 'ListFormsComponent',
 
   components: {
-    RenderForm: defineAsyncComponent(
-      () => import('components/form/listForms/RenderFormComponent.vue')
-    ),
+    RenderForm: defineAsyncComponent({
+      loader: () => import('components/form/listForms/RenderFormComponent.vue'),
+      delay: 500,
+    }),
   },
 
   data() {
@@ -85,17 +92,20 @@ export default defineComponent({
         value: 'updated',
       },
     ];
+    const loadingForms = false;
 
     return {
       formsStore,
       openActions,
       showQuestions,
       optionsOrder,
+      loadingForms
     };
   },
 
   methods: {
-    async allForms() {
+    async allForms(): Promise<void> {
+      this.loadingForms = true;
       const notify = this.$q.notify({
         spinner: true,
         message:
@@ -108,55 +118,14 @@ export default defineComponent({
         group: false,
       });
       //request para pegar 5 formulários
-      await this.$api
-        .get('api/form', {
+      await this.$api.get('api/form', {
           params: {
-            page: this.formsStore.page.current * 2 - 1,
+            page: this.formsStore.page.current,
           },
         })
-        .then(async (response) => {
-          const forms: IForm[] = [];
+        .then((response) => {
           this.formsStore.page.all = response.data.all;
-          forms.push(...response.data.forms.data);
-          if (this.formsStore.forms.length === 0) {
-            this.formsStore.setForms(forms);
-          }
-
-          //Outra request para pegar mais 5 formulários
-          //Objetivo é diminuir a grande quantidade de dados de uma unica vez.
-
-          notify({
-            message: 'Estamos terminando de carregar seus formulários',
-          });
-          await this.$api
-            .get('api/form', {
-              params: {
-                page: this.formsStore.page.current * 2,
-              },
-            })
-            .then((response) => {
-              this.formsStore.setForms([...forms, ...response.data.forms.data]);
-            })
-            .catch((error) => {
-              console.log(error);
-              this.formsStore.setForms(forms);
-              notify({
-                spinner: false,
-                icon: 'warning',
-                timeout: 2000,
-                color: 'red-5',
-                message: 'Não foi possivel carregar todos os formulários',
-              });
-            })
-            .finally(() => {
-              notify({
-                icon: 'done',
-                spinner: false,
-                message: 'Formulários carregados com sucesso',
-                timeout: 2000,
-                color: 'green-4',
-              });
-            });
+          this.formsStore.setForms(response.data.forms.data);
         })
         .catch((error) => {
           console.log(error);
@@ -167,6 +136,16 @@ export default defineComponent({
             timeout: 2000,
             color: 'red-5',
           });
+        })
+        .finally(() => {
+          notify({
+            icon: 'done',
+            spinner: false,
+            message: 'Formulários carregados com sucesso',
+            timeout: 2000,
+            color: 'green-4',
+          });
+          this.loadingForms = false;
         });
     },
   },

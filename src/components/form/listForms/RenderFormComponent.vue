@@ -68,7 +68,11 @@
       </q-card-actions>
 
       <q-card-section class="scroll" style="height: 90%">
-        <q-list bordered class="rounded-borders" v-show="!loadingUpdateTitle">
+        <q-list
+          bordered
+          class="rounded-borders"
+          v-show="!loadingUpdateTitle"
+        >
           <RenderQuestion
             v-for="(question, indexQ) in form.questions"
             :key="indexQ"
@@ -232,7 +236,20 @@ export default defineComponent({
           this.showEditForm = false;
         });
     },
+    async loadQuestions() {
+      await this.$api.get(`api/form/${this.form.id}`)
+        .then(response => {
+          this.formsStore.addQuestions(Number(this.form.id), response.data);
+        })
+    }
   },
+  watch: {
+    showQuestions($new: boolean) {
+      if($new) {
+        this.loadQuestions();
+      }
+    }
+  }
 });
 </script>
 

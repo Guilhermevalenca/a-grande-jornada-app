@@ -4,7 +4,15 @@
       Editando Questão
     </q-card-section>
     <q-card-section>
+      <q-select
+        v-model="editQuestion.type"
+        :options="optionsType"
+        outlined
+        label="Tipo da questão"
+      />
+      <br>
       <q-editor v-model="editQuestion.title" :disable="disable" />
+      <br>
       <q-card>
         <q-card-section>
           <EditOption
@@ -39,7 +47,7 @@
 
 <script lang="ts">
 import { defineAsyncComponent, defineComponent, PropType } from 'vue';
-import { IQuestion } from 'stores/useFormsStore';
+import { IOption, IQuestion } from 'stores/useFormsStore';
 
 export default defineComponent({
   name: 'EditQuestionFormComponent',
@@ -69,6 +77,20 @@ export default defineComponent({
     return {
       editQuestion,
       disable,
+      optionsType: [
+        {
+          label: 'Única resposta',
+          value: 'only'
+        },
+        {
+          label: 'Múltiplas respostas',
+          value: 'multiple'
+        },
+        {
+          label: 'Pergunta aberta',
+          value: 'isOpen'
+        }
+      ]
     };
   },
 
@@ -81,7 +103,7 @@ export default defineComponent({
         title: '',
         isOpen: false,
         correctAlternative: false,
-      });
+      } as IOption);
     },
     async updateQuestion() {
       this.disable = true;

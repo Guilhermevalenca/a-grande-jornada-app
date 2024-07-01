@@ -3,7 +3,6 @@ import { defineStore } from 'pinia';
 export interface IOption {
   id?: number;
   title: string;
-  isOpen: boolean;
   correctAlternative: boolean;
 }
 
@@ -12,6 +11,7 @@ export interface IQuestion {
   title: string;
   form_id?: number;
   options: IOption[];
+  type: 'isOpen' | 'only' | 'multiple'
 }
 
 export interface IForm {
@@ -58,21 +58,18 @@ export default defineStore('forms', {
         this.forms.splice(indice, 1);
       }
     },
+    addQuestions(form_id: number, questions: IQuestion[]) {
+      const form = this.forms.find((form: IForm) => form.id === form_id);
+      if(form) {
+        form.questions = [...questions];
+      }
+    },
     deleteQuestion(indexForm: number, indexQuestion: number): void {
       this.forms[indexForm].questions.splice(indexQuestion, 1);
-    },
-    deleteOption(
-      indexForm: number,
-      indexQuestion: number,
-      indexOption: number
-    ): void {
-      this.forms[indexForm].questions[indexQuestion].options.splice(
-        indexOption,
-        1
-      );
     },
     handlerReverse() {
       this.reverse = !this.reverse;
     },
   },
 });
+

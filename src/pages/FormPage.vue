@@ -1,28 +1,26 @@
 <template>
   <section class="col-11">
-    <q-breadcrumbs class="q-mt-md q-mb-sm">
-      <q-breadcrumbs-el label="Formulário" icon="mdi-home" />
-      <q-breadcrumbs-el
-        :label="page === 'create' ? 'Criando Formulário' : 'Seus Formulário'"
-      />
-      <q-breadcrumbs-el
-        v-for="(label, index) in otherPages"
-        :key="index"
-        :label="label"
-      />
-    </q-breadcrumbs>
-    <div class="flex justify-end q-mb-lg">
-      <q-btn @click="page = 'index'" push>Ver formulários</q-btn>
-      <q-btn color="primary" @click="page = 'create'" push
-        >Criar formulários</q-btn
-      >
+    <div class="flex justify-center q-mb-lg q-mt-xl">
+      <q-btn
+        @click="page = 'index'"
+        push
+        :color="page === 'index' ? '' : 'primary'"
+        :text-color="page === 'index' ? 'black' : ''"
+        size="lg"
+      >Ver formulários
+      </q-btn>
+      <q-btn
+        @click="page = 'create'"
+        push
+        :color="page === 'index' ? 'primary' : ''"
+        :text-color="page === 'index' ? '' : 'black'"
+        size="lg"
+      >Criar formulários
+      </q-btn>
     </div>
     <q-card
-      :class="
-        formsStore.forms.length === 0 && page !== 'create'
-          ? 'window-height'
-          : 'full-height'
-      "
+      :class="formsStore.forms.length === 0 && page !== 'create' ? 'window-height' : 'full-height'"
+      :flat="page === 'index'"
     >
       <q-card-section>
         <q-tab-panels v-model="page">
@@ -46,9 +44,10 @@ export default defineComponent({
   name: 'FormPage',
 
   components: {
-    ListForms: defineAsyncComponent(
-      () => import('components/form/ListFormsComponent.vue')
-    ),
+    ListForms: defineAsyncComponent({
+      loader: () => import('components/form/ListFormsComponent.vue'),
+      delay: 500
+    }),
     CreateForm: defineAsyncComponent(
       () => import('components/form/CreateFormComponent.vue')
     ),
@@ -56,12 +55,10 @@ export default defineComponent({
 
   data() {
     const page = 'index';
-    const otherPages: string[] = [];
     const formsStore = useFormsStore();
 
     return {
       page,
-      otherPages,
       formsStore,
     };
   },

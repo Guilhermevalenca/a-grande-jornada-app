@@ -15,22 +15,29 @@
     </template>
     <q-card>
       <q-card-section>
-        <div class="flex justify-end q-mb-md">
-          <q-btn
-            icon="mdi-pencil"
-            color="secondary"
-            class="q-mr-xs"
-            rounded
-            @click="editQuestion = true"
+        <div class="flex justify-between">
+          <div>
+            <strong>
+              <i>{{messageTypeQuestion}}</i>
+            </strong>
+          </div>
+          <div class="flex q-mb-md">
+            <q-btn
+              icon="mdi-pencil"
+              color="secondary"
+              class="q-mr-xs"
+              rounded
+              @click="editQuestion = true"
             >Editar</q-btn
-          >
-          <q-btn
-            icon="mdi-delete"
-            color="negative"
-            rounded
-            @click="showDialog.delete = true"
+            >
+            <q-btn
+              icon="mdi-delete"
+              color="negative"
+              rounded
+              @click="showDialog.delete = true"
             >Deletar</q-btn
-          >
+            >
+          </div>
         </div>
         <q-list bordered class="rounded-borders">
           <RenderOption
@@ -143,6 +150,19 @@ export default defineComponent({
         });
     },
   },
+
+  computed: {
+    messageTypeQuestion() {
+      switch (this.question.type) {
+        case 'only':
+          return 'Questão de uma única alternativa';
+        case 'multiple':
+          return 'Questão de multiplas escolhas';
+        default:
+          return 'Questão aberta';
+      }
+    }
+  }
 });
 </script>
 
