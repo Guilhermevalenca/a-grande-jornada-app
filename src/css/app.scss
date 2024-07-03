@@ -1,1 +1,22 @@
 // app global css in SCSS form
+
+body {
+  &.body--dark {
+    background-color: $grey-9;
+    .q-header {
+      @apply bg-gray-800;
+    }
+    .q-dark {
+      @apply bg-gray-700 text-gray-300;
+    }
+    .q-field, .q-field__native {
+      @apply text-gray-300;
+    }
+  }
+  &.body--light {
+    //background-color: $grey-6;
+    .q-header {
+      @apply bg-gray-500;
+    }
+  }
+}

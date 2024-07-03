@@ -1,6 +1,8 @@
 <template>
-  <q-layout view="lHh Lpr lFf">
-    <q-header elevated>
+  <q-layout>
+    <q-header
+      elevated
+    >
       <q-toolbar>
         <q-btn
           flat
@@ -70,7 +72,10 @@
       </q-toolbar>
     </q-header>
 
-    <q-drawer v-model="leftDrawerOpen" show-if-above bordered>
+    <q-drawer
+      v-model="leftDrawerOpen"
+      overlay bordered
+    >
       <q-list>
         <q-item-label header> Navegação </q-item-label>
 

@@ -5,17 +5,17 @@
         @click="page = 'index'"
         push
         :color="page === 'index' ? '' : 'primary'"
-        :text-color="page === 'index' ? 'black' : ''"
         size="lg"
-      >Ver formulários
+      >
+        <span :class="page === 'index' ? 'text-gray-300' : 'text-gray-200'">Ver formulários</span>
       </q-btn>
       <q-btn
         @click="page = 'create'"
         push
         :color="page === 'index' ? 'primary' : ''"
-        :text-color="page === 'index' ? '' : 'black'"
         size="lg"
-      >Criar formulários
+      >
+        <span :class="page === 'index' ? 'text-gray-200' : 'text-gray-300'">Criar formulários</span>
       </q-btn>
     </div>
     <q-card
